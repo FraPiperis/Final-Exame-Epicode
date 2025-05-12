@@ -1,4 +1,4 @@
-const Author = require('../models/Author');
+const Author = require('../models/Authors.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
