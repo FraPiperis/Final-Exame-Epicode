@@ -1,15 +1,25 @@
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const Author = require('../models/Authors.js');
+const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
+const mongoose = require('mongoose');
+const Author = require('../models/Author'); // Assicurati che questo path sia corretto
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
-}, async (accessToken, refreshToken, profile, done) => {
-  let user = await Author.findOne({ googleId: profile.id });
-  if (!user) {
-    user = await Author.create({ googleId: profile.id, name: profile.displayName });
-  }
-  done(null, user);
-}));
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET, // ✅ Usa direttamente l'ambiente
+};
+
+module.exports = (passport) => {
+  passport.use(
+    new JwtStrategy(options, async (jwt_payload, done) => {
+      try {
+        const author = await Author.findById(jwt_payload.id);
+        if (author) {
+          return done(null, author);
+        }
+        return done(null, false);
+      } catch (err) {
+        return done(err, false);
+      }
+    })
+  );
+};
+

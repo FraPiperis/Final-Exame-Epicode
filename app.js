@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
+require('./config/passport')(passport);
 
 const authorsRouter = require('./routes/authorsRoute');
 const blogPostsRoute = require('./routes/blogPosts');
