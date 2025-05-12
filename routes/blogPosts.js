@@ -186,6 +186,6 @@ router.delete("/:id/comment/:commentId", async (req, res) => {
     res.send("Commento eliminato");
   } catch (err) {
     res.status(500).send("Errore del server");
-  }
-}
-module.exports = router; 
+    }
+});
+module.exports = router;

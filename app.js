@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(passport.initialize());
 
 const authorsRoute = require('./routes/authors');
-const blogPostsRoute = require('./routes/blogPosts');
+const blogPostsRoute = require('./routes/blogPosts.js');
 
 app.use('/authors', authorsRoute);
 app.use('/blogPosts', blogPostsRoute);
