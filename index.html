@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1.0">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,94 +7,114 @@
 </head>
 <body>
     <form id="article-form">
-        <input type="text" name="title" placeholder="Titolo" required />
-        <input type="text" name="category" placeholder="Categoria" required />
-        <input type="text" name="cover" placeholder="Immagine (URL)" required />
-        <input type="number" name="readTimeValue" placeholder="Tempo lettura (numero)" required />
-        <input type="text" name="readTimeUnit" placeholder="Unità (es. minuti)" required />
-        <input type="email" name="author" placeholder="Email autore" required />
-        <textarea name="content" placeholder="Contenuto HTML" required></textarea>
+        <input type="text" name="title" placeholder="Titolo" required aria-label="Titolo" />
+        <input type="text" name="category" placeholder="Categoria" required aria-label="Categoria" />
+        <input type="text" name="cover" placeholder="Immagine (URL)" required aria-label="Immagine (URL)" />
+        <input type="number" name="readTimeValue" placeholder="Tempo lettura (numero)" required aria-label="Tempo lettura (numero)" />
+        <input type="text" name="readTimeUnit" placeholder="Unità (es. minuti)" required aria-label="Unità di tempo" />
+        <input type="email" name="author" placeholder="Email autore" required aria-label="Email autore" />
+        <textarea name="content" placeholder="Contenuto HTML" required aria-label="Contenuto HTML"></textarea>
         <button type="submit">Pubblica articolo</button>
-      </form>
+    </form>
 
-      <div id="blog-posts-container"></div>
+    <div id="blog-posts-container"></div>
 
-      <input type="text" id="searchInput" placeholder="Cerca per titolo..." />
-        <button onclick="searchPosts()">Cerca</button>
+    <input type="text" id="searchInput" placeholder="Cerca per titolo..." aria-label="Cerca per titolo" />
+    <button onclick="searchPosts()">Cerca</button>
 
-        
-      <script>
+    <script>
         document.getElementById('article-form').addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const form = e.target;
-          const newPost = {
-            title: form.title.value,
-            category: form.category.value,
-            cover: form.cover.value,
-            readTime: {
-              value: parseInt(form.readTimeValue.value),
-              unit: form.readTimeUnit.value
-            },
-            author: form.author.value,
-            content: form.content.value
-          };
-      
-          const res = await fetch('/blogPosts', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newPost)
-          });
-      
-          if (res.ok) {
-            alert('Articolo pubblicato!');
-            form.reset();
-          } else {
-            alert('Errore nella pubblicazione.');
-          }
+            e.preventDefault();
+            const form = e.target;
+            const newPost = {
+                title: form.title.value,
+                category: form.category.value,
+                cover: form.cover.value,
+                readTime: {
+                    value: parseInt(form.readTimeValue.value),
+                    unit: form.readTimeUnit.value
+                },
+                author: form.author.value,
+                content: form.content.value
+            };
+
+            try {
+                const res = await fetch('/blogPosts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newPost)
+                });
+
+                if (res.ok) {
+                    alert('Articolo pubblicato!');
+                    form.reset();
+                    loadBlogPosts(); // Ricarica i post dopo la pubblicazione
+                } else {
+                    alert('Errore nella pubblicazione.');
+                }
+            } catch (error) {
+                console.error('Errore di rete:', error);
+                alert('Errore di rete durante la pubblicazione.');
+            }
         });
+
         async function loadBlogPosts() {
-    const res = await fetch('/blogPosts');
-    const data = await res.json();
-    const posts = data.data;
+            try {
+                const res = await fetch('/blogPosts');
+                if (!res.ok) throw new Error('Errore nella risposta del server');
+                const data = await res.json();
+                const posts = data.data;
 
-    const container = document.getElementById('blog-posts-container');
-    container.innerHTML = '';
+                const container = document.getElementById('blog-posts-container');
+                container.innerHTML = '';
 
-    posts.forEach(post => {
-      const el = document.createElement('div');
-      el.innerHTML = `
-        <h3>${post.title}</h3>
-        <img src="${post.cover}" width="200"/>
-        <p>${post.category} - ${post.readTime.value} ${post.readTime.unit}</p>
-        <p>${post.content}</p>
-        <hr/>
-      `;
-      container.appendChild(el);
-    });
-    }
+                posts.forEach(post => {
+                    const el = document.createElement('div');
+                    el.innerHTML = `
+                        <h3>${post.title}</h3>
+                        <img src="${post.cover}" width="200" alt="Immagine di copertina per ${post.title}" />
+                        <p>${post.category} - ${post.readTime.value} ${post.readTime.unit}</p>
+                        <p>${post.content}</p>
+                        <hr/>
+                    `;
+                    container.appendChild(el);
+                });
+            } catch (error) {
+                console.error('Errore durante il caricamento dei post:', error);
+                alert('Errore durante il caricamento dei post.');
+            }
+        }
 
-    loadBlogPosts();
-    async function searchPosts() {
-    const title = document.getElementById("searchInput").value;
-    const res = await fetch(`/blogPosts?title=${encodeURIComponent(title)}`);
-    const data = await res.json();
-    const posts = data.data;
+        async function searchPosts() {
+            const title = document.getElementById("searchInput").value;
+            try {
+                const res = await fetch(`/blogPosts?title=${encodeURIComponent(title)}`);
+                if (!res.ok) throw new Error('Errore nella risposta del server');
+                const data = await res.json();
+                const posts = data.data;
 
-    const container = document.getElementById("blog-posts-container");
-    container.innerHTML = "";
+                const container = document.getElementById("blog-posts-container");
+                container.innerHTML = "";
 
-    posts.forEach(post => {
-      const el = document.createElement('div');
-      el.innerHTML = `
-        <h3>${post.title}</h3>
-        <img src="${post.cover}" width="200"/>
-        <p>${post.category} - ${post.readTime.value} ${post.readTime.unit}</p>
-        <p>${post.content}</p>
-        <hr/>
-      `;
-      container.appendChild(el);
-    });
-  }
-      </script>
+                posts.forEach(post => {
+                    const el = document.createElement('div');
+                    el.innerHTML = `
+                        <h3>${post.title}</h3>
+                        <img src="${post.cover}" width="200" alt="Immagine di copertina per ${post.title}" />
+                        <p>${post.category} - ${post.readTime.value} ${post.readTime.unit}</p>
+                        <p>${post.content}</p>
+                        <hr/>
+                    `;
+                    container.appendChild(el);
+                });
+            } catch (error) {
+                console.error('Errore durante la ricerca dei post:', error);
+                alert('Errore durante la ricerca dei post.');
+            }
+        }
+
+        // Carica i post al caricamento della pagina
+        loadBlogPosts();
+    </script>
 </body>
 </html>
