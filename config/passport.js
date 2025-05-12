@@ -1,6 +1,6 @@
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
 const mongoose = require('mongoose');
-const Author = require('../models/Author'); // Assicurati che questo path sia corretto
+const Author = require('../models/Authors.js'); // Assicurati che questo path sia corretto
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
