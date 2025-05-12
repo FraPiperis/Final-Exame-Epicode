@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const BlogPost = require("../models/BlogPost.js");
+const BlogPost = require("../models/BlogPosts.js");
 const Author = require("../models/Authors.js"); // per trovare l'autore
 const sendEmail = require("../mailer");     // funzione di invio mail
 
