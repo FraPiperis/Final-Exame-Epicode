@@ -1,43 +1,38 @@
 require('dotenv').config();
 const express = require('express');
-const PORT = process.env.PORT || 3001;
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
+
+// Importa rotte
+const authorsRouter = require('./routes/authorsRoute');
+const blogPostsRoute = require('./routes/blogPosts');
+
+// Passport config
 require('./config/passport');
 
 const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
+// Rotte
+app.use('/authors', authorsRouter);
+app.use('/blogPosts', blogPostsRoute);
 
-// Endpoint di esempio
+// Endpoint di test
 app.get("/", (req, res) => {
   res.send("Server avviato correttamente!");
 });
 
-// Avvia il server
-app.listen(PORT, () => {
-  console.log(`Server in ascolto su http://localhost:${PORT}`);
-});
-
-import authorsRouter from './routes/authorsRoute.js';
-app.use('/authors', authorsRouter);
-app.use('/blogPosts', blogPostsRoute);
-const blogPostsRoute = require('./routes/blogPosts.js');
-
-app.use(passport.initialize());
-import authorsRouter from './routes/authorsRoute.js';
-
-
-
-
-
-
+// Connessione al DB e avvio server
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
-    app.listen(process.env.PORT || 3000, () => {
-      console.log(`Server in ascolto sulla porta ${process.env.PORT}`);
+    app.listen(PORT, () => {
+      console.log(`✅ Server avviato su http://localhost:${PORT}`);
     });
   })
-  .catch(err => console.error(err));
+  .catch(err => console.error("Errore connessione MongoDB:", err));
