@@ -21,14 +21,18 @@ app.listen(PORT, () => {
   console.log(`Server in ascolto su http://localhost:${PORT}`);
 });
 
-
-app.use(passport.initialize());
-
-const authorsRoute = require('./routes/authors');
+import authorsRouter from './routes/authorsRoute.js';
+app.use('/authors', authorsRouter);
+app.use('/blogPosts', blogPostsRoute);
 const blogPostsRoute = require('./routes/blogPosts.js');
 
-app.use('/authors', authorsRoute);
-app.use('/blogPosts', blogPostsRoute);
+app.use(passport.initialize());
+import authorsRouter from './routes/authorsRoute.js';
+
+
+
+
+
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
