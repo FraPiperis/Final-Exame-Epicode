@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const PORT = process.env.PORT || 3001;
 const mongoose = require('mongoose');
 const cors = require('cors');
 const passport = require('passport');
@@ -8,6 +9,19 @@ require('./config/passport');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+
+// Endpoint di esempio
+app.get("/", (req, res) => {
+  res.send("Server avviato correttamente!");
+});
+
+// Avvia il server
+app.listen(PORT, () => {
+  console.log(`Server in ascolto su http://localhost:${PORT}`);
+});
+
+
 app.use(passport.initialize());
 
 const authorsRoute = require('./routes/authors');
