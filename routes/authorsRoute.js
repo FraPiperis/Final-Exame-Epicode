@@ -4,7 +4,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import AuthorModel from '../models/authorModel.js';
-import { JWT_SECRET } from '../src/config.js';
+import { JWT_SECRET } from '../config.js';
 import authMiddleware from '../middlewares/auth.js';
 
 const router = express.Router();
