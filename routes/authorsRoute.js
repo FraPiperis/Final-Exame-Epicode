@@ -1,11 +1,9 @@
-// routes/authorsRoute.js
-
-import express from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import AuthorModel from '../models/authorModel.js';
-import { JWT_SECRET } from '../config.js';
-import authMiddleware from '../middlewares/auth.js';
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const AuthorModel = require('../models/authorModel');
+const { JWT_SECRET } = require('../config');
+const authMiddleware = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -64,4 +62,5 @@ router.get('/me', authMiddleware, async (req, res) => {
     }
 });
 
-export default router;
+module.exports = router;
+
