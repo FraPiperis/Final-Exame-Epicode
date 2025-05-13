@@ -30,5 +30,11 @@ router.get("/", async (req, res) => {
 // GET /blogPosts/:id - singolo post
 router.get("/:id", async (req, res) => {
   try {
-    const
+    const post = await BlogPost.findById(req.params.id);
+    if (!post) return res.status(404).send("Post non trovato");
+    res.json(post);
+  } catch (err) {
+    res.status(400).send("ID non valido");
+  }
+});
 
