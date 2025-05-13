@@ -43,13 +43,14 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+
+
 // POST /blogPosts - nuovo post
 router.post("/", async (req, res) => {
   try {
     const newPost = new BlogPost(req.body);
     const savedPost = await newPost.save();
 
-    // Trova l'autore tramite la sua email
     const author = await Author.findOne({ email: savedPost.author });
     if (author) {
       await sendEmail({
@@ -133,8 +134,8 @@ router.get("/:id/comments/:commentId", async (req, res) => {
   }
 });
 
-// POST /blogPosts/:id - aggiungi commento
-router.post("/:id", async (req, res) => {
+// POST /blogPosts/:id/comments - aggiungi commento
+router.post("/:id/comments", async (req, res) => {
   try {
     const post = await BlogPost.findById(req.params.id);
     if (!post) return res.status(404).send("Post non trovato");
